@@ -2,64 +2,70 @@ from .table import Table
 
 class allTables:
     def __init__(self) -> None:
-        addresClient = ["addres"]
-        addresFilial = ["addres"]
+        addresClient = {
+            "Address":"addres"
+            }
+        addresFilial = {
+            "Address":"addres"
+            }
         agreement = {
             "Id":"id",
             "Amaunt":"amaunt",
             "Agreement":"agreement",
             "Filial":"filial",
             "Client":"client",
-            "Emploee":"emloeement",
-            "insurancecompany",
-            "dateofconclusion",
-            "typeOfInsurance",
-            "mainoffice"
+            "Employee":"emloeement",
+            "InsuranceCompany":"insurancecompany",
+            "DateOfConclusion":"dateofconclusion",
+            "TypeOfInsurance":"typeOfInsurance",
+            "MainOffice":"mainoffice"
         }
-        allCity = ["city"]
-        contractDate = ["datecontract"]
-        filial = [
-            "idcity",
-            "name",
-            "addres",
-            "telephone",
-            "year",
-            "numofemploeers",
-            "id"
-        ]
-        insuranceCompany = [
-            "id",
-            "name",
-            "typeproperty"
-        ]
-        license = [
-            "id",
-            "photo",
-            "endlicense",
-            "number"
-        ]
-        mainOffice = [
-            "city",
-            "phonecharacter",
-            "addres",
-            "yearstart",
-            "license",
-            "id"
-        ]
-        numClient = [
-            "id",
-            ""
-            "idaddres",
-            "idclient",
-            "idaddres",
-            "fio",
-            "telephone",
-            "socialstatus"
-        ]
-        numEmploee = [
-            "id",
-            "fio"
-        ]
+        allCity = {
+            "City":"city"
+            }
+        contractDate = {
+            "DateContract":"datecontract"
+            }
+        filial = {
+            "City":"idcity",
+            "Name":"name",
+            "Address":"addres",
+            "Telephone":"telephone",
+            "Year":"year",
+            "NumOfEmployeer":"numofemploeers",
+            "Id":"id"
+        }
+        insuranceCompany = {
+            "Id":"id",
+            "Name":"name",
+            "TypeProperty":"typeproperty"
+        }
+        license = {
+            "Id":"id",
+            "Photo":"photo",
+            "EndDateLicense":"endlicense",
+            "Number":"number"
+        }
+        mainOffice = {
+            "City":"city",
+            "Telephone":"phonecharacter",
+            "Addres":"addres",
+            "YearStart":"yearstart",
+            "License":"license",
+            "Id":"id"
+        }
+        numClient = {
+            "Id":"id",
+            "City":"idcity",
+            "Address":"idaddres",
+            "FIO":"fio",
+            "Telephone":"telephone",
+            "SocialStatus":"socialstatus"
+        }
+        numEmploee = {
+            "Id":"id",
+            "FIO":"fio"
+        }
         self.__titeleTeble = {
             "addresclient":addresClient ,
             "addresfilial":addresFilial ,
@@ -78,29 +84,12 @@ class allTables:
         return Table(Title,self.__titeleTeble[Title])
 
     def __getitem__ (self,Title:int) :
-        match (Title):
-            case 0:
-                return self.__ToTable("addresclient")
-            case 1:
-                return  self.__ToTable("addresfilial")
-            case 2: 
-                return  self.__ToTable("agreement")
-            case 3:
-                return  self.__ToTable("allcity")
-            case 4:
-                return  self.__ToTable("contractdate")
-            case 5:
-                return  self.__ToTable("filial")
-            case 6:
-                return  self.__ToTable("insrancecompany")
-            case 7:
-                return  self.__ToTable("license")
-            case 8:
-                return  self.__ToTable("mainoffice")
-            case 9:
-                return  self.__ToTable("numclient")
-            case 10:
-                return  self.__ToTable("numemployee")
+        i = 0
+        for key in self.__titeleTeble.keys():
+            if i == Title:
+                return self.__ToTable(key)
+            i = i+1
+        raise IndexError("Не верное значение индекса "+str(Title))
     
     def GetItem(self,item:str):
         return self.__ToTable(item)

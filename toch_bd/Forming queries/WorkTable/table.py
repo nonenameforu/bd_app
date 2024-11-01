@@ -1,35 +1,32 @@
 
 
 class Table :
-    def __init__(self, Title:str,Fields:list) -> None:
+    def __init__(self, Title:str,Fields:map) -> None:
         self.__Title = Title
         self.__Fields = Fields
 
-    def GetSample (self,sample:list) ->list:
-        newFilds = []
-        for i in range (len(sample)):
-            newFilds.append(self.__Fields[sample[i]])
+    def GetSample (self,sample:list) -> map:
+        newFilds = {}
+        for key in sample:
+            newFilds[key] = self.__Fields[key]
         return newFilds
     
-    def GetAllSample(self) -> list:
+    def GetAllSample(self) -> map:
         return self.__Fields
     
-    def GetFullPathSample(self,sample:list) -> list:
-        newFilds = []
-        for i in range (len(sample)):
-            newFilds.append(self.__Title+"."+self.__Fields[sample[i]])
+    def GetFullPathSample(self,sample:list) -> map:
+        newFilds = {}
+        for key in sample:
+            newFilds[key] = self.__Title+"."+self.__Fields[key]
         return newFilds
     
-    def GetAllFullPathSample(self) -> list:
-        newFilds = []
-        for i in range (len(self.__Fields)):
-            newFilds.append(self.__Title+"."+self.__Fields[i])
-        return newFilds
+    def GetAllFullPathSample(self) -> map:
+        return self.__Fields
     
-    def GetTitel(self)->str:
+    def GetTitel(self) -> str:
         return self.__Title
 
-    def SetTable(self,Title:str,Fields:list):
+    def SetTable(self,Title:str,Fields:map) -> None:
         self.__Title = Title
         self.__Fields = Fields
     
