@@ -1,26 +1,31 @@
 from WorkTable import Table,allTables
 from execute_in_bd import Execute
 from abstactQuery import AbstractQuery
+from finalquery import FinalQuery
 
 class Select(AbstractQuery):
 
     def __init__(self) -> None:
         self.query ="Select"
 
-    def newSelct(self,tab):
+    def newSelct(self,reqwest):
         self.ClearQuery()
-        if isinstance(tab,Table) :
-            fulpath = tab.GetAllFullPathSample()
+        if isinstance(reqwest,Table) :
+            fulpath = reqwest.GetAllFullPathSample()
             self.__GenerteSelect(fulpath)
             self.query = self.query[:-1] 
 
-        elif (isinstance(tab,list) and isinstance(tab[0],Table)):
-            for table in tab :
-                self.__GenerteSelect(table.GetAllFullPathSample())
+        elif (isinstance(reqwest,list)):
+            for object in reqwest :
+                if (isinstance(object,Table)): # TODO Добавить обработку позапросов
+                    self.__GenerteSelect(object.GetAllFullPathSample())
+
+                elif(isinstance(object,FinalQuery)):
+                    self.__GenerteSelect(str(object))
             self.query = self.query[:-1]  
 
-        elif (isinstance(tab,Select)):
-            self.query +="("+str(tab)+")" 
+        elif (isinstance(reqwest,Select)):
+            self.query +="("+str(reqwest)+")" 
 
     def From(self,tab):
         self.query = self.query + "\nFrom "+tab.GetTitel() 

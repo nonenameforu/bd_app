@@ -17,7 +17,7 @@ class allTables:
             "Employee":"emloeement",
             "InsuranceCompany":"insurancecompany",
             "DateOfConclusion":"dateofconclusion",
-            "TypeOfInsurance":"typeOfInsurance",
+            "TypeOfInsurance":"typeofinsurance",
             "MainOffice":"mainoffice"
         }
         allCity = {
@@ -73,7 +73,7 @@ class allTables:
             "allcity":allCity ,
             "contractdate":contractDate ,
             "filial":filial ,
-            "insrancecompany":insuranceCompany ,
+            "insurancecompany":insuranceCompany ,
             "license":license ,
             "mainoffice":mainOffice ,
             "numclient":numClient ,

@@ -190,7 +190,7 @@ def filingMainOffice():
 
 connect = execute_in_bd.Execute()
 date = connect.execIO("SELECT * FROM contractdate;")
-summa = random.randint(5000,150000)
+
 
 # Генерируем запрос для текущего значения i и произвольного типа страхования
 types_of_insurance = [
@@ -211,6 +211,7 @@ types_of_insurance = [
 
 for i in range (len(date)):
     type_of_insurance = random.choice(types_of_insurance)
+    summa = random.randint(5000,150000)
 
     query = f"""
         INSERT INTO agreement VALUES (
