@@ -16,6 +16,7 @@ from PIL import ImageTk
 import io
 from io import BytesIO
 import base64
+import pandas as pd
 
 
 class mainWindow:
@@ -1137,7 +1138,31 @@ WHERE id IN (
             self.filingTables(tables[tab].GetTitel(),tab)
 
     def GenerateExelFilie(self):
-        pass
+        tables = allTables()
+        noteSelect = self.notebook.select()
+        if ".!notebook.!frame" == noteSelect:
+            tab = 0
+        else :
+            tab = int(noteSelect[-1]) - 1
+            if tab == -1:
+                tab = 9
+        result_table = self.MyTables[tab].tree
+        file_path = filedialog.asksaveasfilename(defaultextension=".xlsx", filetypes=[("Excel Files", "*.xlsx")])
+
+        if not file_path:
+            return  
+
+        data = []
+        columns = result_table["columns"]  
+        for row in result_table.get_children():
+            data.append(result_table.item(row, 'values'))
+
+        df = pd.DataFrame(data, columns=columns)
+        try:
+            df.to_excel(file_path, index=False, engine='openpyxl')
+            messagebox.showinfo("Экспорт завершен", "Данные успешно экспортированы в Excel!")
+        except Exception as e:
+            messagebox.showerror("Ошибка", f"Ошибка при экспорте в Excel: {e}")
         
 
 
