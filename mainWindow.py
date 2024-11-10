@@ -12,7 +12,10 @@ from datetime import datetime
 from tkcalendar import DateEntry
 from fileChoserTk import FileChooserButton
 from PIL import Image
+from PIL import ImageTk
 import io
+from io import BytesIO
+import base64
 
 
 class mainWindow:
@@ -80,7 +83,20 @@ class mainWindow:
 
         statesticButton = ttk.Button(self.bottom_frame, text="statistic",command=self.statisticButton)
         statesticButton.pack(side="left")
+
+        self.serchEntry = ttk.Entry(self.bottom_frame)
+        self.serchEntry.pack(side="left",padx="45",fill="x")
         
+        searchButton = ttk.Button(self.bottom_frame,text="search",command=self.serch)
+        searchButton.pack(side="left")
+
+        ressetButton = ttk.Button(self.bottom_frame,text="resset search",command=self.ressetSearch)
+        ressetButton.pack(side="left")
+
+        geneareteTable = ttk.Button(self.bottom_frame,text="generate Exel",command=self.GenerateExelFilie)
+        geneareteTable.pack(side="left")
+
+
     def filingTables(self,name:str,num:int):
         query = Select()
         tables = allTables()
@@ -927,7 +943,7 @@ class mainWindow:
         Button = self.newButton(new_window,"redact",addButton)
 
     
-    def statisticButton(self): # TODO Реализацию кнопки статистика
+    def statisticButton(self):
         def addTab(text):
             tabFrame =ttk.Frame(tabs)
             tabs.add(tabFrame,text=text)
@@ -1070,10 +1086,59 @@ WHERE id IN (
         new_window = tk.Toplevel(self.root)
         new_window.title("Новое окно")
         new_window.geometry("250x200")
-        my
+        sel = self.MyTables[6].tree.selection()
+        sel = self.MyTables[6].tree.item(sel)['values']
+        print(type(sel[1]))
+        # Добавляем padding, если его не хватает
+        missing_padding = len(sel[1]) % 4
+        if missing_padding != 0:
+                sel[1] += '=' * (4 - missing_padding)
+        image_data = base64.b64decode(sel[1])
+        image = Image.open(BytesIO(image_data))
+        photo = ImageTk.PhotoImage(image)
+
+    def serch(self):
+        tables = allTables()
+        noteSelect = self.notebook.select()
+        if ".!notebook.!frame" == noteSelect:
+            tab = 0
+        else :
+            tab = int(noteSelect[-1]) - 1
+            if tab == -1:
+                tab = 9
+        for item in self.MyTables[tab].tree.get_children():
+            self.MyTables[tab].tree.delete(item)
+
+        table = []
+        field = tables[tab].getfield()
+        for titel in field:
+            try:
+                query = f"""Select * From {tables[tab].GetTitel()} Where {field[titel]} = '{self.serchEntry.get()}' """
+                self.connect.reconect()
+                table.append(self.connect.execIO(query))
+            except:
+                pass
+        for item in table:
+            if len(item)>0:
+                for row in item:
+                    self.MyTables[tab].tree.insert("", "end",values=row)
         
+    def ressetSearch(self):
+        tables = allTables()
+        noteSelect = self.notebook.select()
+        if ".!notebook.!frame" == noteSelect:
+            tab = 0
+        else :
+            tab = int(noteSelect[-1]) - 1
+            if tab == -1:
+                tab = 9
+        for item in self.MyTables[tab].tree.get_children():
+            self.MyTables[tab].tree.delete(item)
+            self.filingTables(tables[tab].GetTitel(),tab)
+
+    def GenerateExelFilie(self):
+        pass
         
-        label.pack()
 
 
 if __name__ == "__main__":
