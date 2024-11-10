@@ -31,12 +31,13 @@ class Execute:
 
 
     def execIO(self,command:str)->str:
-        try:
+        # try:
             with self.connection.cursor() as cursor:
                 cursor.execute(command)
                 return cursor.fetchall()
-        except:
-            self.reconect()
-            return self.execIO(command)
+        # except:
+        #     self.reconect()
+        #     cursor.execute(command)
+        #     return cursor.fetchall()
 
             

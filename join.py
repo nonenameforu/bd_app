@@ -1,8 +1,6 @@
-from TermOperand import Term
 from abstactQuery import AbstractQuery
-from WorkTable import Table,allTables
-from selectsql import Select
-from execute_in_bd import Execute
+from Tables import allTables
+from table import Table
 
 
 class Join(AbstractQuery):
@@ -12,10 +10,8 @@ class Join(AbstractQuery):
         self.RightTab = RightTab
 
     def __join (self,join:str,firstOperand:str,signin:str,secondOperand:str):
-
         firstOperand = self.LeftTab.GetFullPathSample([firstOperand])[firstOperand]
         secondOperand = self.LeftTab.GetFullPathSample([secondOperand])[secondOperand]
-
 
         sign = {
             "more":">",
@@ -48,15 +44,5 @@ class Join(AbstractQuery):
 
 
 if __name__ == "__main__":
-    q = Select()
-    tab = allTables()
-    filal = tab.GetItem("filial")
-    filal.SetTable(filal.GetTitel(),filal.GetSample(["City"]))
-    numclient = tab.GetItem("numclient")
-    numclient.SetTable(numclient.GetTitel(),numclient.GetSample(["FIO","SocialStatus"]))
-    q.From([filal,numclient])
-    b = Join((tab.GetItem("numclient")),(tab.GetItem("filial")))
-    b.Inner("City","equal","City")
-    print (q+b)
-    bd = Execute()
-    print(bd.execIO(q+b))
+    f = allTables()
+    print(f)

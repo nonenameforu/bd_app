@@ -1,4 +1,4 @@
-from .table import Table
+from table import Table
 
 class allTables:
     def __init__(self) -> None:
@@ -14,10 +14,10 @@ class allTables:
             "Agreement":"agreement",
             "Filial":"filial",
             "Client":"client",
-            "Employee":"emloeement",
-            "InsuranceCompany":"insurancecompany",
+            "Employee":"emploeement",
+            "InsuranceCompany":"insuancecompany",
             "DateOfConclusion":"dateofconclusion",
-            "TypeOfInsurance":"typeofinsurance",
+            "TypeOfInsurance":"typeofinsuranse",
             "MainOffice":"mainoffice"
         }
         allCity = {
@@ -43,8 +43,8 @@ class allTables:
         license = {
             "Id":"id",
             "Photo":"photo",
-            "EndDateLicense":"endlicense",
-            "Number":"number"
+            "EndDateLicense":"endlicese",
+            "Number":"numer"
         }
         mainOffice = {
             "City":"city",
@@ -68,7 +68,7 @@ class allTables:
         }
         self.__titeleTeble = {
             "addresclient":addresClient ,
-            "addresfilial":addresFilial ,
+            # "addresfilial":addresFilial ,
             "agreement":agreement ,
             "allcity":allCity ,
             "contractdate":contractDate ,

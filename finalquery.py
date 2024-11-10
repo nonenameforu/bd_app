@@ -1,4 +1,5 @@
 from abstactQuery import AbstractQuery
+
 class FinalQuery(AbstractQuery): 
     def __init__(self) -> None:
         self.query = ""

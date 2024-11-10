@@ -1,5 +1,5 @@
-from WorkTable import Table,allTables
-from execute_in_bd import Execute
+from Tables import allTables
+from table import Table
 from abstactQuery import AbstractQuery
 from finalquery import FinalQuery
 

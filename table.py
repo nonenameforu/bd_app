@@ -31,3 +31,10 @@ class Table:
     def SetTable(self, title: str, fields: dict) -> None:
         self.__title = title
         self.__fields = fields
+
+    def getfield(self):
+        return self.__fields
+
+    # def __getitem__(self):
+
+
