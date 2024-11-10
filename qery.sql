@@ -92,7 +92,7 @@ WHERE a.client IS NULL;
 -- ### 1. Итоговый запрос без условия
 -- Подсчитываем общее количество договоров.
 
-sql
+
 SELECT COUNT(*) AS total_agreements
 FROM agreement;
 

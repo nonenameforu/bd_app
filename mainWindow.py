@@ -928,22 +928,151 @@ class mainWindow:
 
     
     def statisticButton(self): # TODO Реализацию кнопки статистика
-        new_window = new_window("Statistic","300x400")
+        def addTab(text):
+            tabFrame =ttk.Frame(tabs)
+            tabs.add(tabFrame,text=text)
+            return tabFrame
+        def Tabletab(frame,query,title):
+            tree = ttk.Treeview(frame,columns = title,show="headings")
+            for column in title :
+                tree.heading(column,text=column)
+            tree.pack(expand=True,fill="both")
+            self.connect.reconect()
+            result = self.connect.execIO(query)
+            for row in result:
+                tree.insert("","end",values=row)
+        new_window = self.newWindow("Statistic","2000x400")
         tabs = ttk.Notebook(new_window)
         tabs.pack(expand=True,fill="both")
-        noif1 =ttk.Frame(tabs)
-        tabs.add(noif1,text="1 внутренее соединение без условия")
-        
-        
+        first = addTab("1 внутренее соединение без условия")
+        query = """SELECT filial.idcity, numclient.fio ,numclient.socialstatus
+FROM filial
+INNER JOIN numclient ON filial.idcity = numclient.idcity"""
+        first = Tabletab(first,query,["idcity","FIO","Social Status"])
+
+        second = addTab("2 внутренее соединение без условия")
+        query = """Select agreement.amaunt, filial.name, filial.numofemploeers  
+from agreement
+INNER JOIN filial ON filial.id = agreement.filial"""
+        second = Tabletab(second,query,["amaunt","name","numofemployeers"])
+
+        third = addTab("3 внутренее соединение без условия")
+        query = """Select agreement.amaunt, agreement.typeofinsuranse, numclient.idcity
+from agreement
+INNER JOIN numclient ON numclient.id = agreement.client"""
+        third = Tabletab(third,query,["amaunt","typeofinsurance","idcity"])
+
+        third = addTab("1 внутреннее с условием")
+        query = """Select agreement.amaunt, numclient.socialstatus ,numclient.id ,agreement.client
+from agreement
+INNER JOIN numclient ON numclient.id = agreement.client
+WHERE agreement.amaunt > 25000;"""
+        third = Tabletab(third,query,["amaunt","social status","id","client"])
+
+        third = addTab("2 внутреннее с условием")
+        query = """Select agreement.amaunt, numclient.socialstatus ,numclient.id ,agreement.client ,numclient.idcity       
+from agreement
+INNER JOIN numclient ON numclient.id = agreement.client
+WHERE numclient.idcity = 'Москва'"""
+        third = Tabletab(third,query,["amaunt","social Status","id","client","numclient","idcity"])
+
+        third = addTab("1 c условием на дату")
+        query = """Select agreement.amaunt, numclient.socialstatus  
+from agreement
+INNER JOIN numclient ON numclient.id = agreement.client
+WHERE agreement.dateofconclusion > '2015/05/07'"""
+        third = Tabletab(third,query,["amaunt","socil Status"])
+
+        third = addTab("2 c условием на дату")
+        query = """Select agreement.amaunt, numclient.socialstatus  
+from agreement
+INNER JOIN numclient ON numclient.id = agreement.client
+WHERE agreement.dateofconclusion < '2015/05/07'"""
+        third = Tabletab(third,query,["amaunt","socil Status"])
+
+        third = addTab("Левое соединение")
+        query = """Select numclient.fio
+from agreement
+LEFT JOIN numclient ON numclient.id = agreement.client"""
+        third = Tabletab(third,query,["FIO"])
+
+
+        third = addTab("Правое соединение")
+        query = """Select numclient.fio
+from   agreement
+Right JOIN numclient ON numclient.id = agreement.client;"""
+        third = Tabletab(third,query,["FIO"])
+
+        third = addTab("Запрос на запросе через левое соединение")
+        query = """SELECT n.id, n.fio, n.telephone, 
+       COALESCE(a.filial, 0) AS branch, 
+       COALESCE(a.typeofinsuranse, 'Not insured') AS insurance_type
+FROM numclient n
+LEFT JOIN (
+    SELECT client, filial, typeofinsuranse
+    FROM agreement
+    GROUP BY client, filial, typeofinsuranse
+) a ON n.id = a.client
+WHERE a.client IS NULL;"""
+        third = Tabletab(third,query,["id","fio","telephone","branch","insuance type"])
+
+        third = addTab("Итог без условия")
+        query = """SELECT COUNT(*) AS total_agreements
+FROM agreement;"""
+        third = Tabletab(third,query,["total agreement"])
+
+        third = addTab ("Итог с условием")
+        query = """SELECT COUNT(*) AS high_value_agreements
+FROM agreement
+WHERE amaunt > 50000;"""
+        third = Tabletab(third,query,["high value agreements"])
+
+        third = addTab("Итог с условием на группы")
+        query = """SELECT typeofinsuranse, COUNT(*) AS agreement_count
+FROM agreement
+GROUP BY typeofinsuranse
+HAVING COUNT(*) > 5;"""
+        third = Tabletab(third ,query,["typeofinsuranse","agreement count"])
+
+        third = addTab("Итог запрос группы данные")
+        query = """SELECT typeofinsuranse, COUNT(*) AS agreement_count
+FROM agreement
+WHERE amaunt > 10000
+GROUP BY typeofinsuranse
+HAVING COUNT(*) > 3;"""
+        third = Tabletab(third,query,["typeofinsuranse","agreement_count"])
+
+        third = addTab("Запрос на запросе по принципу итогового запроса")
+        query = """SELECT COUNT(*) AS clients_with_multiple_agreements
+FROM (
+    SELECT client, COUNT(*) AS agreement_count
+    FROM agreement
+    GROUP BY client
+    HAVING COUNT(*) > 2
+) AS client_agreement_counts;"""
+        third = Tabletab(third,query,["client","agreement count"])
+
+        third = addTab("Запрос с подзапросом")
+        query = """SELECT fio, telephone
+FROM numclient
+WHERE id IN (
+    SELECT client
+    FROM agreement
+    WHERE amaunt > 15000
+);
+"""
+        third = Tabletab(third,query,["fio","telephone"])
+
+
 
 
     def double_click(self,event): # TODO Реализацию Ивента двойное нажатие по полю лицензия
         new_window = tk.Toplevel(self.root)
         new_window.title("Новое окно")
         new_window.geometry("250x200")
+        my
         
-        # Добавление виджетов в новое окно
-        label = tk.Label(new_window, text="Это новое окно")
+        
         label.pack()
 
 
