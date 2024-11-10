@@ -254,7 +254,7 @@ class mainWindow:
         result = int(result[0][0])
         return result
     
-    def addCity(self): # TODO добавить проверку на пустоту
+    def addCity(self): 
         def addButton():
             self.connect.reconect()
             result = self.connect.execIO(f"Select city From allcity where city = '{city.get()}'")
@@ -279,7 +279,7 @@ class mainWindow:
             result = self.connect.execIO(f"Select datecontract From contractdate where datecontract = '{Date.get_date()}'")
             if len(result) == 0 :
                 self.connect.reconect()
-                self.connect.exec(f"Insert Into allcity Values('{Date.get_date()}')")
+                self.connect.exec(f"Insert Into contractdate Values('{Date.get_date()}')")
             else:
                  messagebox.showinfo("Info","Такая дата уже есть")
                  return 0
@@ -302,7 +302,6 @@ class mainWindow:
             except:
                 messagebox.showwarning("Error","Вы ввели не номер")
 
-            
             self.connect.reconect()
             result = self.connect.execIO(f"Select telephone From filial Where telephone = '{tel}'")
             if len(result) != 0:
@@ -487,6 +486,7 @@ class mainWindow:
                 query = f"Insert Into numemployee Values( {id} ,'{fio}' )"
                 self.connect.reconect()
                 self.connect.exec(query)
+                new_window.destroy()
         new_window = self.newWindow("Add Num Client", "300x200")
         FIO = self.newEntry(new_window,"FIO")
         Button = self.newButton(new_window,"add",addButton)
@@ -560,7 +560,7 @@ class mainWindow:
         self.filingTables(tables[tab].GetTitel(),tab)
 
 
-    def redactButton(self): # TODO Реализацию кнопки Редактировать
+    def redactButton(self):
         def ForRedact(item,func):
             try:
                 sel = self.MyTables[item].tree.selection()
@@ -576,21 +576,21 @@ class mainWindow:
             case ".!notebook.!frame2":
                 ForRedact(1,self.redactAgreement)
             case ".!notebook.!frame3":
-                self.addCity()
+                ForRedact(2,self.redactCity)
             case ".!notebook.!frame4":
-                self.addContractDate()
+                 ForRedact(3,self.redactCity)
             case ".!notebook.!frame5":
-                self.addFilial()
+                ForRedact(4,self.redactFilial)
             case ".!notebook.!frame6":
-                self.addInsuranceCompany()
+                ForRedact(5,self.redactInsuranceCompany)
             case ".!notebook.!frame7":
-                self.addLicense()
+                ForRedact(6,self.redactLicense)
             case ".!notebook.!frame8":
-                self.addMainOffice()
+                ForRedact(7,self.redactMainOffice)
             case ".!notebook.!frame9":
-                self.addNumClient()
+                ForRedact(8,self.redactNumClient)
             case ".!notebook.!frame10":
-                self.addNumEmployeer()
+                ForRedact(9,self.redactNumEmployeer)
 
     def redactAddresclient(self,dataSet): 
         def addButton():
@@ -607,8 +607,7 @@ class mainWindow:
 
     def redactAgreement(self,dataSet): 
         def addButton():
-            self.connect.reconect()
-            id = self.connect.execIO("Select Max(agreement.id) From agreement")
+            id = dataSet[0]
             
             try:
                 if int(amaunt.get()) >= 15_000:
@@ -634,16 +633,14 @@ class mainWindow:
 
 
             query = f"""
-        INSERT INTO agreement VALUES (
-            {id[0][0]+1}, {numAmaunt}, '{agreement.get("1.0", "2.0")}',
-            (SELECT id FROM filial WHERE id = {filialId}),
-            (SELECT id FROM numclient WHERE id = {clientId}),
-            (SELECT id FROM numemployee WHERE id = {employeeId}),
-            (SELECT id FROM insurancecompany WHERE id = {insuranceName}),
-            (SELECT datecontract FROM contractdate WHERE datecontract = '{dateofcoclusion.get_date()}'),
-            '{TyepOfInsurance.get()}',
-            (SELECT id FROM mainoffice WHERE id = 0)
-        );
+            Update agreement Set amaunt = {numAmaunt},agreement = '{agreement.get("1.0", "2.0")}',
+            filial = {filialId},
+            client ={clientId},
+            emploeement = {employeeId},
+            insuancecompany = {insuranceName},
+            dateofconclusion = '{dateofcoclusion.get_date()}',
+            typeofinsuranse = '{TyepOfInsurance.get()}',
+            mainoffice = 0 Where id = {id} 
     """
             self.connect.reconect()
             self.connect.exec(query)
@@ -678,13 +675,267 @@ class mainWindow:
         "Страхование бизнеса","Страхование ответственности","Страхование на случай потери работы",
         "Ипотечное страхование","Страхование домашних животных","Страхование от стихийных бедствий"]
         TyepOfInsurance = self.newCombobox(new_window,"Type Of Insurance",TyepOfInsurance)
-        print(dataSet[8])
         TyepOfInsurance.set(dataSet[8])
 
         Button = self.newButton(new_window,"redact",addButton)
+
+    def redactCity(self,dataSet): 
+        def addButton():
+            self.connect.reconect()
+            result = self.connect.execIO(f"Select city From allcity where city = '{city.get()}'")
+            if len(result) == 1 :
+                if len(city.get())<30:
+                    self.connect.reconect()
+                    self.connect.exec(f"Update allcity Set city ='{city.get()}' where city = '{dataSet[0]}'")
+                else:
+                    messagebox.showwarning("Error","Сликом длинное назваение города")
+            else:
+                 messagebox.showinfo("Info","Такой город уже есть")
+                 return 0
+            
+            new_window.destroy()
+        new_window = self.newWindow("Add City","300x250")
+        city = self.newEntry(new_window,"City")
+        city.insert(0,dataSet[0])
+        Button = self.newButton(new_window,"redact",addButton)
+
+    def radactContractDate(self,dataSet):
+        def addButton():
+            self.connect.reconect()
+            result = self.connect.execIO(f"Select datecontract From contractdate where datecontract = '{Date.get_date()}'")
+            if len(result) == 1 :
+                self.connect.reconect()
+                self.connect.exec(f"Update contractdate Set contractdate ='{Date.get_date()}' where contractdate = '{dataSet[0]}'")
+            else:
+                 messagebox.showinfo("Info","Такая дата уже есть")
+                 return 0
+            new_window.destroy()
+        new_window = self.newWindow("redact Contract Date","300x250")
+        Date = self.newDate(new_window,"Contract date")
+        Button = self.newButton(new_window,"redact",addButton)
+
+    def redactFilial(self,dataSet):
+        def addButton():
+            Year = datetime.now().year
+            id = self.connect.execIO("Select Max(filial.id) From filial")
+            id = id[0][0]
+            try:
+                if len(Telephone.get())== 11:
+                    tel = int(Telephone.get())
+                else:
+                    messagebox.showwarning("Error","Слишком много цифр")
+                    return 0
+            except:
+                messagebox.showwarning("Error","Вы ввели не номер")
+                
+            self.connect.reconect()
+            result = self.connect.execIO(f"Select telephone From filial Where telephone = '{tel}'")
+            
+            if len(Name.get()) < 30 :
+                self.connect.reconect()
+                result = self.connect.execIO(f"Select name From filial Where name = '{Name.get()}' ")
+            else :
+                messagebox.showwarning("Error","Слишком длинное название филиала")
+                return 0
+
+            if len(Addres.get()) >50:
+                messagebox.showwarning("Error","Слишком длинное название улицы")
+
+            employeeId = self.GetAttribute("Select id From numemployee where fio = ",Employee)
+            query = f"""
+            Update filial Set name = '{Name.get()}', addres = '{Addres.get()}',telephone = '{tel}',
+            year = {Year},numofemploeers = {employeeId} where id = {dataSet[6]}
+            """
+            self.connect.reconect()
+            self.connect.exec(query)
+            new_window.destroy()
+
+        new_window = self.newWindow("redact Filial","300x350")
+        print (dataSet)
+        City = self.newCombobox(new_window,"City","Select allcity.city From allcity")
+        City.set(dataSet[0])
+        Name = self.newEntry(new_window,"Name")
+        Name.insert(0,dataSet[1])
+        Addres = self.newEntry(new_window,"Addres")
+        Addres.insert(0,dataSet[2])
+        Telephone = self.newEntry(new_window,"Telephone")
+        Telephone.insert(0,dataSet[3])
+        Employee = self.newCombobox(new_window,"Employee","Select numemployee.fio From numemployee")
+        self.connect.reconect()
+        res = self.connect.execIO(f"Select fio From numemployee where id ={dataSet[5]}")
+        res = res[0][0]
+        Employee.set(res)
+        Button = self.newButton(new_window,"redact",addButton)
+
+    def redactInsuranceCompany(self, dataSet):
+        def addButton():
+            self.connect.reconect()
+            id = self.connect.execIO("Select max(id) From insurancecompany")
+            id = id[0][0] 
+            if len(Name.get())>50:
+                messagebox.showerror("Error","Слишком длинное имя")
+                return 0 
+            query = f"""
+                Update insurancecompany Set name = '{Name.get()}',typeproperty = '{TypeProperty.get()}' Where id = {dataSet[0]} 
+             """
+            self.connect.reconect()
+            self.connect.exec(query)
+            new_window.destroy()
+        print(dataSet)
+        new_window = self.newWindow("add Insurance Company","300x250")
+        Name = self.newEntry(new_window,"Name")
+        Name.insert(0,dataSet[1])
+        Property = ["Частная собственность",
+        "Государственная собственность",
+        "Смешанная собственность",
+        "Иностранная собственность"]
+        TypeProperty = self.newCombobox(new_window,"Type Property",Property)
+        TypeProperty.set(dataSet[2])
+        Button = self.newButton(new_window,"redact",addButton)
+
+    def redactLicense(self,dataSet):
+        def addButton():
+            self.connect.reconect()
+            id = self.connect.execIO("Select max(id) From license")
+            id = id[0][0] + 1
+            path = ButtonImage.get()
+            date = EndDate.get_date()
+            num = Number.get()
+            self.connect.reconect()
+            res = self.connect.execIO("Select max(endlicese) From license")
+            res = res[0][0]
+            today = date.today()
+            if date < res and today > date:
+                messagebox.showwarning("Error","Не верная дата новой лицензии")
+            try:
+                int(num)
+                print(path)
+                print(len(path))
+                if len(path) != 0 and len(num) != 0:
+                    image_bytes = ""
+                    with Image.open(path) as image:
+                        # Создаем буфер для хранения битового представления
+                        byte_stream = io.BytesIO()
+                        # Сохраняем изображение в буфер в формате PNG
+                        image.save(byte_stream, format="PNG")
+                        # Получаем байтовое представление
+                        image_bytes = byte_stream.getvalue()
+                    query = "Update license Set photo=%s ,endlicense=%s,numer=%s Where id = %s"
+                    values = (image_bytes,date,num,dataSet[0])
+                    self.connect.reconect()
+                    self.connect.execTwoArguments(query,values)
+                    new_window.destroy()
+                else:
+                    messagebox.showinfo("Info","Заполните поля")
+            except:
+                messagebox.showwarning("Error","Вы ввели не число в number")
+            
+        new_window = self.newWindow("redact License","300x250")
+        ButtonImage = FileChooserButton(new_window)
+        ButtonImage.pack()
+        EndDate = self.newDate(new_window, "End Date")
+        Number = self.newEntry(new_window, "Number")
+        Number.insert(0,dataSet[3])
+        Button = self.newButton(new_window,"redact",addButton)
+
+    def redactMainOffice(self,dataSet):
+        def addButton():
+            self.connect.reconect()
+            id = self.connect.execIO("Select max(id) From mainoffice")
+            id = id[0][0]
+            self.connect.reconect()
+            licenseId = self.connect.execIO("Select id From license Where endlicese = (Select max(endlicese) From license)")
+            licenseId = licenseId[0][0] 
+            try:
+                tel = Telephone.get() 
+                adress = Addres.get()
+                year = YearStart.get()
+                int(tel)
+                if len(tel) <= 11 and len(adress) <= 30 and int(year)< 2024:
+                    query = f"""
+                    Update mainoffice Set city='{City.get()}',phonecharacter='{tel}',addres ='{adress}',
+                    yearstart = '{year}',license = {licenseId} where id = {id} 
+                    """
+                    self.connect.reconect()
+                    self.connect.exec(query)
+                    new_window.destroy()
+                else:
+                    messagebox.showwarning("Error","введите информацию верно")
+            except:
+                messagebox.showwarning("Error","Вы ввели не число в Telephone или Year Start")
+        new_window = self.newWindow("Redact Main Office","300x500")
+        City = self.newCombobox(new_window,"City","Select city From allcity ")
+        City.set(dataSet[0])
+        Telephone  = self.newEntry(new_window,"Telephone")
+        Telephone.insert(0,dataSet[1])
+        Addres = self.newEntry(new_window,"Addres")
+        Addres.insert(0,dataSet[2])
+        YearStart = self.newEntry(new_window,"Year Start")
+        YearStart.insert(0,dataSet[3])
+        Button = self.newButton(new_window,"redact",addButton)
+
+    def redactNumClient(self,dataSet):
+        def addButton():
+            self.connect.reconect()
+            id = self.connect.execIO("Select max(id) From numclient")
+            id = id[0][0] 
+            fio = Fio.get()
+            socstatus = SocialStatus.get()
+            city = City.get()
+            try:
+                tel = Telephone.get() 
+                adress = Addres.get()
+                int(tel)
+                socstatus = int(socstatus)
+                if len(tel) <= 11 and len(fio)<50 and socstatus>0 and socstatus<=1000:
+                    query  =f"""
+                    Update numclient Set idcity = '{city}',idaddres='{adress}',fio = '{fio}',
+                    telephone = '{tel}', socialstatus = {SocialStatus.get()} Where id = {dataSet[0]} 
+                    """
+                    self.connect.reconect()
+                    self.connect.exec(query)
+                    new_window.destroy()
+            except:
+                messagebox.showwarning("Error","Вы ввели не число в Telephone")
+        new_window = self.newWindow("Add Num Client","300x500")
+        City = self.newCombobox(new_window,"City","Select city From allcity ")
+        City.set(dataSet[1])
+        Addres = self.newCombobox(new_window,"Address","Select addres From addresclient")
+        Addres.set(dataSet[2])
+        Fio = self.newEntry(new_window,"FIO")
+        Fio.insert(0,dataSet[3])
+        Telephone  = self.newEntry(new_window,"Telephone")
+        Telephone.insert(0,dataSet[4])
+        SocialStatus = self.newEntry(new_window,"Social status")
+        SocialStatus.insert(0,dataSet[5])
+        Button = self.newButton(new_window,"redact",addButton)
+
+    def redactNumEmployeer(self,dataSet):
+        def addButton():
+            self.connect.reconect()
+            id = self.connect.execIO("Select max(id) From numemployee")
+            id = id[0][0]
+            fio = FIO.get()
+            if len(fio)<60:
+                query = f"Update numemployee Set fio='{fio}' Where id = {dataSet[0]} "
+                self.connect.reconect()
+                self.connect.exec(query)
+                new_window.destroy()
+        new_window = self.newWindow("Redact Num Client", "300x200")
+        FIO = self.newEntry(new_window,"FIO")
+        FIO.insert(0,dataSet[1])
+        Button = self.newButton(new_window,"redact",addButton)
+
     
     def statisticButton(self): # TODO Реализацию кнопки статистика
-        pass
+        new_window = new_window("Statistic","300x400")
+        tabs = ttk.Notebook(new_window)
+        tabs.pack(expand=True,fill="both")
+        noif1 =ttk.Frame(tabs)
+        tabs.add(noif1,text="1 внутренее соединение без условия")
+        
+        
+
 
     def double_click(self,event): # TODO Реализацию Ивента двойное нажатие по полю лицензия
         new_window = tk.Toplevel(self.root)

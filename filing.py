@@ -211,7 +211,7 @@ types_of_insurance = [
 
 for i in range (len(date)):
     type_of_insurance = random.choice(types_of_insurance)
-    summa = random.randint(5000,150000)
+    summa = random.randint(15000,150000)
 
     query = f"""
         INSERT INTO agreement VALUES (

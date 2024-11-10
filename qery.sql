@@ -2,7 +2,7 @@
 -- внутренее соединение Без условия 1 Показывает социальный статус в людей в разных городах 
 SELECT filial.idcity, numclient.fio ,numclient.socialstatus
 FROM filial
-INNER JOIN numclient ON filial.idcity = numclient.idcity;
+INNER JOIN numclient ON filial.idcity = numclient.idcity
 
 -- внутренее соединение без условия 2
 
